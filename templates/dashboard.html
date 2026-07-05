@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Attendance Analysis Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="masthead">
+      <div>
+        <div class="eyebrow">Register &middot; Academic Attendance</div>
+        <h1>Eligibility Report</h1>
+      </div>
+      <div class="reg-no">Threshold {{ threshold }}%<br />Remaining classes: {{ remaining_classes }}</div>
+    </div>
+    <p class="subhead">
+      <a class="link-quiet" href="{{ url_for('index') }}">&larr; Analyze another sheet</a>
+    </p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="num">{{ summary.total }}</div>
+        <div class="label">Students</div>
+      </div>
+      <div class="stat eligible">
+        <div class="num">{{ summary.eligible }}</div>
+        <div class="label">Eligible</div>
+      </div>
+      <div class="stat risk">
+        <div class="num">{{ summary.at_risk }}</div>
+        <div class="label">At risk</div>
+      </div>
+      <div class="stat not-eligible">
+        <div class="num">{{ summary.not_eligible }}</div>
+        <div class="label">Not eligible</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Student register</h2>
+      <p class="hint">Sorted with the most urgent cases first.</p>
+
+      <table class="register">
+        <thead>
+          <tr>
+            <th>Roll no.</th>
+            <th>Name</th>
+            <th>Attendance</th>
+            <th>Verdict</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in students %}
+          <tr>
+            <td>{{ s.roll_no }}</td>
+            <td style="font-family: var(--font-body); font-weight:500;">{{ s.name }}</td>
+            <td>
+              <span class="pct-bar-track">
+                <span class="pct-bar-fill" style="width: {{ [s.current_pct, 100] | min }}%; background:
+                  {% if s.status == 'Eligible' %}var(--stamp-green)
+                  {% elif s.status == 'At Risk' %}var(--stamp-amber)
+                  {% else %}var(--stamp-red){% endif %};"></span>
+              </span>
+              {{ s.current_pct }}% <span style="color:var(--ink-soft);">({{ s.attended }}/{{ s.held }})</span>
+            </td>
+            <td>
+              {% if s.status == 'Eligible' %}
+                <span class="stamp eligible">Eligible</span>
+              {% elif s.status == 'At Risk' %}
+                <span class="stamp risk">At Risk</span>
+              {% else %}
+                <span class="stamp not-eligible">Not Eligible</span>
+              {% endif %}
+            </td>
+            <td class="note-cell">
+              {% if s.status == 'Eligible' %}
+                Can skip up to {{ s.safe_bunks }} more class(es) and stay eligible.
+              {% elif s.status == 'At Risk' %}
+                Must attend the next {{ s.classes_needed }} class(es) without a miss to cross {{ threshold }}%.
+              {% else %}
+                Even with 100% attendance for the rest of term (max {{ s.max_possible_pct }}%), cannot reach {{ threshold }}%.
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <details class="subject-detail">
+        <summary>View subject-wise breakdown</summary>
+        <table class="subjects">
+          <thead>
+            <tr>
+              <th>Roll no.</th>
+              <th>Name</th>
+              <th>Subject</th>
+              <th>Held</th>
+              <th>Attended</th>
+              <th>%</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in subjects %}
+            <tr>
+              <td>{{ row.RollNo }}</td>
+              <td style="font-family: var(--font-body);">{{ row.Name }}</td>
+              <td>{{ row.Subject }}</td>
+              <td>{{ row.ClassesHeld }}</td>
+              <td>{{ row.ClassesAttended }}</td>
+              <td>{{ row.Pct }}%</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </details>
+    </div>
+
+    <footer class="foot">Rule-based prediction &middot; {{ threshold }}% eligibility norm &middot; built with Flask + pandas</footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,352 @@
+/* ============================================================
+   Attendance Analysis Agent — "Academic Register" design system
+   ============================================================
+   Concept: the app looks like a physical attendance register /
+   ledger book. Verdicts (Eligible / At Risk / Not Eligible) are
+   rendered as rubber ink-stamps, the way a register clerk would
+   mark a page. Data is set in monospace, like ruled ledger columns.
+   ============================================================ */
+
+:root {
+  --paper: #f6f2e9;
+  --paper-line: #d8cfb8;
+  --ink: #20303a;
+  --ink-soft: #55636b;
+  --steel: #3d5a73;
+  --stamp-green: #2f6f4e;
+  --stamp-amber: #a5731f;
+  --stamp-red: #a13d3d;
+  --card-bg: #fffdf8;
+
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-body: "Inter", -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 37px,
+    var(--paper-line) 38px
+  );
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+.wrap {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 48px 24px 96px;
+}
+
+/* ---------- Header ---------- */
+.masthead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 3px solid var(--ink);
+  padding-bottom: 18px;
+  margin-bottom: 8px;
+}
+
+.masthead .eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--steel);
+}
+
+.masthead h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 40px;
+  margin: 4px 0 0;
+  letter-spacing: -0.01em;
+}
+
+.masthead .reg-no {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+  text-align: right;
+}
+
+.subhead {
+  font-size: 15px;
+  color: var(--ink-soft);
+  margin: 10px 0 40px;
+  max-width: 60ch;
+}
+
+/* ---------- Card ---------- */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--paper-line);
+  box-shadow: 0 1px 0 var(--paper-line), 0 8px 24px -18px rgba(32, 48, 58, 0.4);
+  border-radius: 3px;
+  padding: 32px;
+  margin-bottom: 32px;
+}
+
+.card h2 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  margin: 0 0 6px;
+}
+
+.card .hint {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  margin: 0 0 24px;
+}
+
+/* ---------- Form ---------- */
+.field {
+  margin-bottom: 20px;
+}
+
+.field label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--steel);
+  margin-bottom: 8px;
+}
+
+.field input[type="file"],
+.field input[type="number"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--paper-line);
+  border-radius: 2px;
+  background: var(--paper);
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  color: var(--ink);
+}
+
+.field .note {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  margin-top: 6px;
+}
+
+.btn {
+  display: inline-block;
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  padding: 13px 26px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: var(--steel);
+}
+
+.link-quiet {
+  font-size: 13px;
+  color: var(--steel);
+  text-decoration: underline;
+}
+
+.flash {
+  background: #fbe9e9;
+  border: 1px solid var(--stamp-red);
+  color: var(--stamp-red);
+  padding: 12px 16px;
+  border-radius: 2px;
+  font-size: 13.5px;
+  margin-bottom: 24px;
+}
+
+.csv-help {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  background: var(--paper);
+  border: 1px dashed var(--paper-line);
+  padding: 14px 16px;
+  border-radius: 2px;
+  color: var(--ink-soft);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* ---------- Summary strip ---------- */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--paper-line);
+  border: 1px solid var(--paper-line);
+  margin-bottom: 32px;
+}
+
+.stat {
+  background: var(--card-bg);
+  padding: 22px 20px;
+}
+
+.stat .num {
+  font-family: var(--font-mono);
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.stat .label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  margin-top: 4px;
+}
+
+.stat.eligible .num { color: var(--stamp-green); }
+.stat.risk .num { color: var(--stamp-amber); }
+.stat.not-eligible .num { color: var(--stamp-red); }
+
+/* ---------- Register table ---------- */
+table.register {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+}
+
+table.register th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--steel);
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--ink);
+}
+
+table.register td {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--paper-line);
+  vertical-align: middle;
+}
+
+table.register tr:nth-child(even) td {
+  background: #fbf8f1;
+}
+
+.pct-bar-track {
+  width: 90px;
+  height: 6px;
+  background: var(--paper-line);
+  border-radius: 3px;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+.pct-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+}
+
+/* ---------- Stamp badges (signature element) ---------- */
+.stamp {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  transform: rotate(-4deg);
+  position: relative;
+}
+
+.stamp::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  opacity: 0.55;
+}
+
+.stamp.eligible { color: var(--stamp-green); }
+.stamp.risk { color: var(--stamp-amber); }
+.stamp.not-eligible { color: var(--stamp-red); }
+
+.note-cell {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+/* ---------- Subject detail ---------- */
+details.subject-detail {
+  margin-top: 8px;
+}
+
+details.subject-detail summary {
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--steel);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+table.subjects {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  margin-top: 20px;
+}
+
+table.subjects th, table.subjects td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--paper-line);
+}
+
+table.subjects th {
+  color: var(--steel);
+  text-transform: uppercase;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+}
+
+footer.foot {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  margin-top: 48px;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 640px) {
+  .masthead { flex-direction: column; }
+  .masthead .reg-no { text-align: left; margin-top: 8px; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  table.register { font-size: 12px; }
+}

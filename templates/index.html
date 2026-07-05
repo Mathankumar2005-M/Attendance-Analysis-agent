@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Attendance Analysis Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="masthead">
+      <div>
+        <div class="eyebrow">Register &middot; Academic Attendance</div>
+        <h1>Attendance Analysis Agent</h1>
+      </div>
+      <div class="reg-no">FORM AAA&#8209;01<br />Eligibility Predictor</div>
+    </div>
+    <p class="subhead">
+      Upload subject-wise attendance and this agent tracks every student's
+      running percentage, then predicts whether they'll clear the
+      75% eligibility mark before the semester ends.
+    </p>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for m in messages %}
+          <div class="flash">{{ m }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="card">
+      <h2>Upload attendance sheet</h2>
+      <p class="hint">CSV with one row per student per subject.</p>
+
+      <form action="{{ url_for('analyze') }}" method="post" enctype="multipart/form-data">
+        <div class="field">
+          <label for="csv_file">Attendance CSV</label>
+          <input type="file" id="csv_file" name="csv_file" accept=".csv" required />
+        </div>
+
+        <div class="field">
+          <label for="remaining_classes">Classes remaining this semester (per subject, approx.)</label>
+          <input type="number" id="remaining_classes" name="remaining_classes" value="20" min="0" />
+          <div class="note">Used to predict whether an at-risk student can still reach 75% with perfect attendance from today.</div>
+        </div>
+
+        <button type="submit" class="btn">Analyze attendance</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Expected CSV format</h2>
+      <p class="hint">Column names must match exactly. One row per student per subject.</p>
+      <div class="csv-help">RollNo,Name,Subject,ClassesHeld,ClassesAttended
+101,Arun Kumar,Mathematics,40,38
+101,Arun Kumar,Physics,35,33
+102,Divya Sri,Mathematics,40,25</div>
+      <p style="margin-top:16px;">
+        <a class="link-quiet" href="{{ url_for('static', filename='sample_attendance.csv') }}" download>
+          Download sample_attendance.csv
+        </a>
+      </p>
+    </div>
+
+    <footer class="foot">Rule-based prediction &middot; 75% eligibility norm &middot; built with Flask + pandas</footer>
+  </div>
+</body>
+</html>
